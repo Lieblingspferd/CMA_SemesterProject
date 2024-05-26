@@ -10,10 +10,10 @@ quarto render Readme.md --to pdf
 **Patterns & Trends in Environmental Data / Computational Movement
 Analysis Geo 880**
 
-| Semester:      | FS23                                     |
+| Semester:      | FS24                                     |
 |:---------------|:---------------------------------------- |
 | **Data:**      | Mountainbike activity data (Strava & Komoot) |
-| **Title:**     | The title of your project                |
+| **Title:**     | Have I gotten faster? - An analysis of Mountainbiking data                |
 | **Student 1:** | Annika Hirsch                            |
 | **Student 2:** | Name of Student 2                        |
 
