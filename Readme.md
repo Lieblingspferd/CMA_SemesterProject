@@ -15,7 +15,6 @@ Analysis Geo 880**
 | **Data:**      | Mountainbike activity data (Strava & Komoot) |
 | **Title:**     | Have I gotten faster? - An analysis of Mountainbiking data                |
 | **Student 1:** | Annika Hirsch                            |
-| **Student 2:** | Name of Student 2                        |
 
 ## Abstract 
 <!-- (50-60 words) -->

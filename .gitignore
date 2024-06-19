@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 *.fit
+*.gpx
+swiss-map-vector10_2023_1208_2056.gdb/
+QGIS-stuff/
