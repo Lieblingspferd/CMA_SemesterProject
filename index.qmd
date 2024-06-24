@@ -54,6 +54,26 @@ To answer my question I used Mountainbiking activity records. These activity rec
 
 The titles shown in the list above are the original titel, that I gave the named the activity after finishing the ride. Judging from the titles, the trail has different conditions ("diesmal trocken", "Rutschige nasse"), I had falls ("Sturz") or problems with the GPS ("kein GPS"). The activities were tracked with different devices (old phone, new phone, watch) but I do not remember which activity was tracked with which device and this is therefore ignored. 
 
+The following pictures (Figure 1) highlight some parts of the trail: 
+
+(a) Medium-tight corner at the top of the trail
+(b) Technically challenging corner in the upper middle of the trail, where a precise line choice is crucial
+(c) Slightly off-camber root section, where a precise line choice is necessary (Photographed from the bottom)
+(d) Corner in the middle of the trail, that I still cannot ride through
+
+::: {#fig-trailpictures layout-ncol=4}
+
+![Top-Corner](photos/IMG_20240617_155719.jpg){#fig-topcorner}
+
+![Technical Corner](photos/IMG_20240617_160033.jpg){#fig-technicalcorner}
+
+![Root Section](photos/IMG_20240617_162214.jpg){#fig-rootsection}
+
+![Corner that I cannot ride](photos/IMG_20240617_163115.jpg){#fig-notridecorner}
+
+Photos of the Trail
+:::
+
 To crop the records to the correct extent ("Bleiki DH"), I used a manually drawn line of the part of the hiking path on the Swisstopo Web Map. To attempt the Map Matching, I started with using the "DKM10_STRASSE" layer from the vectorized 1:10 000 map from Swisstopo (https://www.swisstopo.admin.ch/de/landeskarte-swiss-map-vector-10). Since this path does not match the real course of the hiking path, I later used the path from the Open Street Map (https://www.openstreetmap.org/#map=16/46.6937/7.8627), which does match the Digital Elevation Model better. 
 
 ### Methods
