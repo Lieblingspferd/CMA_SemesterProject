@@ -147,6 +147,9 @@ smoothness2 <- function(dataframe){
 get_metrics <- function(dataframe){
   metrics <- dataframe %>%
     summarise(
+      total_time = as.numeric(difftime(max(dataframe$timestamp, na.rm = TRUE), 
+                                       min(dataframe$timestamp, na.rm = TRUE), 
+                                       units = "mins")),
       mean_speed = mean(speed2, na.rm = TRUE), 
       sd_speed = sd(speed2, na.rm = TRUE), 
       mean_acceleration = mean(acceleration2, na.rm = TRUE),
@@ -222,6 +225,86 @@ jerk_lim <- function(){
   maxjerk <- max(jerk2, na.rm = TRUE)
   minjerk <- min(jerk2, na.rm = TRUE)
   return(c(maxjerk, minjerk)) 
+}
+
+# Function to add the different dataframes to the plot
+add_data_to_fig <- function(dataframe, color2, label){
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe), y = ~speed2, 
+                           name = paste0("Speed ", label), mode = 'lines', type = 'scatter', line = list(color = color2, width = 2))
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe),  
+                           y = ~acceleration2, name = paste0("Acceleration ", label), line = list(color = color2, width = 2, dash = 'dash')) 
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe),
+                           y = ~jerk2, name = paste0("Jerk ", label), line = list(color = color2, width = 2, dash = 'dot'))
+  return(fig)
+}
+
+# Adding a column, that states the segment 
+# I will go from the top to the bottom, so if any segment is in multiple, 
+# it will be matched to the one with the highest number
+match_to_segment <- function(dataframe, segmentation = "difficulty"){
+  temp <- dataframe
+  temp$segment <- "none"
+  if (segmentation == "difficulty"){
+    temp$bool_segment <- apply(st_within(dataframe, buf1, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 1"
+    temp$bool_segment <- apply(st_within(dataframe, buf2, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 2"
+    temp$bool_segment <- apply(st_within(dataframe, buf3, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 3"
+    temp$bool_segment <- apply(st_within(dataframe, buf4, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 4"
+    temp$bool_segment <- apply(st_within(dataframe, buf5, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 5"
+    temp$bool_segment <- apply(st_within(dataframe, buf6, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 6"
+    temp$bool_segment <- apply(st_within(dataframe, buf7, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 7"
+    temp$bool_segment <- apply(st_within(dataframe, buf8, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 8"
+    temp$bool_segment <- apply(st_within(dataframe, buf9, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 9"
+    temp$bool_segment <- apply(st_within(dataframe, buf10, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 10"
+    temp$bool_segment <- NULL
+    return(temp)
+  } else if (segmentation == "natural"){
+    temp$bool_segment <- apply(st_within(dataframe, n_buf1, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 1"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf2, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 2"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf3, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 3"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf4, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 4"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf5, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 5"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf6, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 6"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf7, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 7"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf8, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 8"
+    temp$bool_segment <- NULL
+    return(temp)
+  } else {print("This type of segmentation is not supported")}
+}
+
+# Function to get the metrics (mean and standard deviation) of 
+# speed, acceleration and jerk of the respective dataframe by segment
+get_metrics_by_segment <- function(dataframe){
+  metrics <- dataframe %>%
+    group_by(segment) %>%
+    summarise(
+      total_time = as.numeric(difftime(max(timestamp, na.rm = TRUE), 
+                                       min(timestamp, na.rm = TRUE), 
+                                       units = "secs")),
+      mean_speed = mean(speed2, na.rm = TRUE), 
+      sd_speed = sd(speed2, na.rm = TRUE), 
+      mean_acceleration = mean(acceleration2, na.rm = TRUE),
+      sd_acceleration = sd(acceleration2, na.rm = TRUE),
+      mean_jerk = mean(jerk2, na.rm = TRUE),
+      sd_jerk = sd(jerk2, na.rm = TRUE)
+    )
 }
 
 # Map Matching (without incorporating the timestamp)

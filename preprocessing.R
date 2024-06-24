@@ -701,7 +701,6 @@ test <- a1_static2
 test <- st_transform(test, crs = 4326)
 coords <- st_coordinates(test)
 test <- cbind(test, coords) 
-coordinates(a1) <- ~X+Y
 move_obj <- move(x = test$X.1, 
                  y = test$Y.1, 
                  time = test$timestamp, 
@@ -933,37 +932,64 @@ plot_speed_all()
 # Nice try, but this plot actually displays nothing
 
 # I am going all out and make the plot interactive
+# (because I don't want to create 39 plots)
+library(plotly)
+fig <- NULL
+fig <- plot_ly(a1_static2, x = timediff_since_start(a1_static2), y = ~speed2, 
+               name = "Speed a1", mode = 'lines', type = 'scatter', line = list(color = 'red', width = 2))
+fig <- fig %>% add_trace(y = ~acceleration2, name = "Acceleration a1", line = list(color = 'red', width = 2, dash = 'dash')) 
+fig <- fig %>% add_trace(y = ~jerk2, name = "Jerk a1", line = list(color = 'red', width = 2, dash = 'dot'))
+fig <- fig %>% add_trace(data = a2_static2, x = timediff_since_start(a2_static2), y = ~speed2, 
+               name = "Speed a2", mode = 'lines', type = 'scatter', line = list(color = 'orange', width = 2))
+fig <- fig %>% add_trace(data = a2_static2, x = timediff_since_start(a2_static2),  
+                         y = ~acceleration2, name = "Acceleration a2", line = list(color = 'orange', width = 2, dash = 'dash')) 
+fig <- fig %>% add_trace(data = a2_static2, x = timediff_since_start(a2_static2),
+                         y = ~jerk2, name = "Jerk a2", line = list(color = 'orange', width = 2, dash = 'dot'))
 
-test <- plot_speed(a1_static2)
-test
-# Plot Speed
-p_speed <- ggplot(combined_a, aes(x = timestamp, y = speed2, color = id)) +
-  geom_line() +
-  facet_wrap(~ id, ncol = 5) +
-  ylim(y_limits$speed_min, y_limits$speed_max) +
-  theme_minimal() +
-  labs(title = "Speed over Time", x = "Time", y = "Speed")
+# Function to add the different dataframes to the plot
+add_data_to_fig <- function(dataframe, color2, label){
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe), y = ~speed2, 
+                         name = paste0("Speed ", label), mode = 'lines', type = 'scatter', line = list(color = color2, width = 2))
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe),  
+                         y = ~acceleration2, name = paste0("Acceleration ", label), line = list(color = color2, width = 2, dash = 'dash')) 
+  fig <- fig %>% add_trace(data = dataframe, x = timediff_since_start(dataframe),
+                         y = ~jerk2, name = paste0("Jerk ", label), line = list(color = color2, width = 2, dash = 'dot'))
+  return(fig)
+}
 
-# Plot Acceleration
-p_accel <- ggplot(combined_a, aes(x = timestamp, y = acceleration2, color = id)) +
-  geom_line() +
-  facet_wrap(~ id, ncol = 5) +
-  ylim(y_limits$accel_min, y_limits$accel_max) +
-  theme_minimal() +
-  labs(title = "Acceleration over Time", x = "Time", y = "Acceleration")
+fig <- add_data_to_fig(a3_static2, "yellow", "a3")
+fig <- add_data_to_fig(a4_static2, "lightgreen", "a4")
+fig <- add_data_to_fig(a5_static2, "green", "a5")
+fig <- add_data_to_fig(a6_static2, "darkgreen", "a6")
+fig <- add_data_to_fig(a7_static2, "lightblue", "a7")
+fig <- add_data_to_fig(a8_static2, "royalblue", "a8")
+fig <- add_data_to_fig(a9_static2, "darkblue", "a9")
+fig <- add_data_to_fig(a10_static2, "purple", "a10")
+fig <- add_data_to_fig(a11_static2, "magenta", "a11")
+fig <- add_data_to_fig(a12_static2, "pink", "a12")
+fig <- add_data_to_fig(a13_static2, "salmon", "a13")
+fig <- fig %>% layout(yaxis = list(title = "Speed [m/s], Acceleration [m/s^2] and Jerk [m/s^3]"),
+                      xaxis = list(title = "Time [s]"),
+                      title = "Speed, Acceleration and Jerk over the duration of the ride")
 
-# Plot Jerk
-p_jerk <- ggplot(combined_a, aes(x = timestamp, y = jerk2, color = id)) +
-  geom_line() +
-  facet_wrap(~ id, ncol = 5) +
-  ylim(y_limits$jerk_min, y_limits$jerk_max) +
-  theme_minimal() +
-  labs(title = "Jerk over Time", x = "Time", y = "Jerk")
+fig
 
-# Combine plots vertically
-combined_plot <- plot_grid(p_speed, p_accel, p_jerk, align = 'v', ncol = 1)
+# exporting all aX_static2 so that I can use the code from here to create the 
+# interactive plot in the documentation
+st_write(a1_static2, "data/strava_records/a1_static2.gpkg")
+st_write(a2_static2, "data/strava_records/a2_static2.gpkg")
+st_write(a3_static2, "data/strava_records/a3_static2.gpkg")
+st_write(a4_static2, "data/strava_records/a4_static2.gpkg")
+st_write(a5_static2, "data/strava_records/a5_static2.gpkg")
+st_write(a6_static2, "data/strava_records/a6_static2.gpkg")
+st_write(a7_static2, "data/strava_records/a7_static2.gpkg")
+st_write(a8_static2, "data/strava_records/a8_static2.gpkg")
+st_write(a9_static2, "data/strava_records/a9_static2.gpkg")
+st_write(a10_static2, "data/strava_records/a10_static2.gpkg")
+st_write(a11_static2, "data/strava_records/a11_static2.gpkg")
+st_write(a12_static2, "data/strava_records/a12_static2.gpkg")
+st_write(a13_static2, "data/strava_records/a13_static2.gpkg")
 
-combined_plot
 
 
 ######## Segmentation ########
@@ -992,31 +1018,189 @@ n_segment8 <- st_read("data/segmentation/natural_segmentation/n_segment8.gpkg")
 
 
 # Create buffer for all segments
-buf1 <- st_buffer(segment1, 3, endCapStyle = "flat")
-buf2 <- st_buffer(segment2, 3, endCapStyle = "flat")
-buf3 <- st_buffer(segment3, 3, endCapStyle = "flat")
-buf4 <- st_buffer(segment4, 3, endCapStyle = "flat")
-buf5 <- st_buffer(segment5, 3, endCapStyle = "flat")
-buf6 <- st_buffer(segment6, 3, endCapStyle = "flat")
-buf7 <- st_buffer(segment7, 3, endCapStyle = "flat")
-buf8 <- st_buffer(segment8, 3, endCapStyle = "flat")
-buf9 <- st_buffer(segment9, 3, endCapStyle = "flat")
-buf10 <- st_buffer(segment10, 3, endCapStyle = "flat")
+buf1 <- st_buffer(segment1, 5, endCapStyle = "FLAT")
+buf2 <- st_buffer(segment2, 5, endCapStyle = "FLAT")
+buf3 <- st_buffer(segment3, 5, endCapStyle = "FLAT")
+buf4 <- st_buffer(segment4, 5, endCapStyle = "FLAT")
+buf5 <- st_buffer(segment5, 5, endCapStyle = "FLAT")
+buf6 <- st_buffer(segment6, 5, endCapStyle = "FLAT")
+buf7 <- st_buffer(segment7, 5, endCapStyle = "FLAT")
+buf8 <- st_buffer(segment8, 5, endCapStyle = "FLAT")
+buf9 <- st_buffer(segment9, 5, endCapStyle = "FLAT")
+buf10 <- st_buffer(segment10, 5, endCapStyle = "FLAT")
 
-n_buf1 <- st_buffer(n_segment1, 3, endCapStyle = "flat")
-n_buf2 <- st_buffer(n_segment2, 3, endCapStyle = "flat")
-n_buf3 <- st_buffer(n_segment3, 3, endCapStyle = "flat")
-n_buf4 <- st_buffer(n_segment4, 3, endCapStyle = "flat")
-n_buf5 <- st_buffer(n_segment5, 3, endCapStyle = "flat")
-n_buf6 <- st_buffer(n_segment6, 3, endCapStyle = "flat")
-n_buf7 <- st_buffer(n_segment7, 3, endCapStyle = "flat")
-n_buf8 <- st_buffer(n_segment8, 3, endCapStyle = "flat")
+n_buf1 <- st_buffer(n_segment1, 5, endCapStyle = "FLAT")
+n_buf2 <- st_buffer(n_segment2, 5, endCapStyle = "FLAT")
+n_buf3 <- st_buffer(n_segment3, 5, endCapStyle = "FLAT")
+n_buf4 <- st_buffer(n_segment4, 5, endCapStyle = "FLAT")
+n_buf5 <- st_buffer(n_segment5, 5, endCapStyle = "FLAT")
+n_buf6 <- st_buffer(n_segment6, 5, endCapStyle = "FLAT")
+n_buf7 <- st_buffer(n_segment7, 5, endCapStyle = "FLAT")
+n_buf8 <- st_buffer(n_segment8, 5, endCapStyle = "FLAT")
 
-# Adding a column, that states the column 
-# I will go from the top to the bottom, so
-a1 <- a1 %>% filter(apply(st_within(., buffer, sparse = FALSE), 1, any))
+# Adding a column, that states the segment 
+# I will go from the top to the bottom, so if any segment is in multiple, 
+# it will be matched to the one with the highest number
+match_to_segment <- function(dataframe, segmentation = "difficulty"){
+  temp <- dataframe
+  temp$segment <- "none"
+  if (segmentation == "difficulty"){
+    temp$bool_segment <- apply(st_within(dataframe, buf1, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 1"
+    temp$bool_segment <- apply(st_within(dataframe, buf2, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 2"
+    temp$bool_segment <- apply(st_within(dataframe, buf3, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 3"
+    temp$bool_segment <- apply(st_within(dataframe, buf4, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 4"
+    temp$bool_segment <- apply(st_within(dataframe, buf5, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 5"
+    temp$bool_segment <- apply(st_within(dataframe, buf6, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 6"
+    temp$bool_segment <- apply(st_within(dataframe, buf7, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 7"
+    temp$bool_segment <- apply(st_within(dataframe, buf8, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 8"
+    temp$bool_segment <- apply(st_within(dataframe, buf9, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 9"
+    temp$bool_segment <- apply(st_within(dataframe, buf10, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "segment 10"
+    temp$bool_segment <- NULL
+    return(temp)
+  } else if (segmentation == "natural"){
+    temp$bool_segment <- apply(st_within(dataframe, n_buf1, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 1"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf2, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 2"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf3, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 3"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf4, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 4"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf5, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 5"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf6, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 6"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf7, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 7"
+    temp$bool_segment <- apply(st_within(dataframe, n_buf8, sparse = FALSE), 1, any)
+    temp$segment[temp$bool_segment == TRUE] <- "N segment 8"
+    temp$bool_segment <- NULL
+    return(temp)
+  } else {print("This type of segmentation is not supported")}
+}
 
-  
+# Carry out segmentation
+a1_ds <- match_to_segment(a1_static2)
+a2_ds <- match_to_segment(a2_static2)
+a3_ds <- match_to_segment(a3_static2)
+a4_ds <- match_to_segment(a4_static2)
+a5_ds <- match_to_segment(a5_static2)
+a6_ds <- match_to_segment(a6_static2)
+a7_ds <- match_to_segment(a7_static2)
+a8_ds <- match_to_segment(a8_static2)
+a9_ds <- match_to_segment(a9_static2)
+a10_ds <- match_to_segment(a10_static2)
+a11_ds <- match_to_segment(a11_static2)
+a12_ds <- match_to_segment(a12_static2)
+a13_ds <- match_to_segment(a13_static2)
+
+a1_ns <- match_to_segment(a1_static2, segmentation = "natural")
+a2_ns <- match_to_segment(a2_static2, segmentation = "natural")
+a3_ns <- match_to_segment(a3_static2, segmentation = "natural")
+a4_ns <- match_to_segment(a4_static2, segmentation = "natural")
+a5_ns <- match_to_segment(a5_static2, segmentation = "natural")
+a6_ns <- match_to_segment(a6_static2, segmentation = "natural")
+a7_ns <- match_to_segment(a7_static2, segmentation = "natural")
+a8_ns <- match_to_segment(a8_static2, segmentation = "natural")
+a9_ns <- match_to_segment(a9_static2, segmentation = "natural")
+a10_ns <- match_to_segment(a10_static2, segmentation = "natural")
+a11_ns <- match_to_segment(a11_static2, segmentation = "natural")
+a12_ns <- match_to_segment(a12_static2, segmentation = "natural")
+a13_ns <- match_to_segment(a13_static2, segmentation = "natural")
+
+
+# Function to get the metrics (mean and standard deviation) of 
+# speed, acceleration and jerk of the respective dataframe by segment
+get_metrics_by_segment <- function(dataframe){
+  metrics <- dataframe %>%
+    group_by(segment) %>%
+      summarise(
+        total_time = as.numeric(difftime(max(timestamp, na.rm = TRUE), 
+                                         min(timestamp, na.rm = TRUE), 
+                                         units = "secs")),
+        mean_speed = mean(speed2, na.rm = TRUE), 
+        sd_speed = sd(speed2, na.rm = TRUE), 
+        mean_acceleration = mean(acceleration2, na.rm = TRUE),
+        sd_acceleration = sd(acceleration2, na.rm = TRUE),
+        mean_jerk = mean(jerk2, na.rm = TRUE),
+        sd_jerk = sd(jerk2, na.rm = TRUE)
+      )
+}
+
+# Calculating the metrics for all dataframes
+a1_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a1_ds))
+a2_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a2_ds))
+a3_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a3_ds))
+a4_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a4_ds))
+a5_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a5_ds))
+a6_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a6_ds))
+a7_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a7_ds))
+a8_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a8_ds))
+a9_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a9_ds))
+a10_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a10_ds))
+a11_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a11_ds))
+a12_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a12_ds))  
+a13_ds_metrics <- st_drop_geometry(get_metrics_by_segment(a13_ds))
+
+a1_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a1_ns))
+a2_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a2_ns))
+a3_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a3_ns))
+a4_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a4_ns))
+a5_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a5_ns))
+a6_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a6_ns))
+a7_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a7_ns))
+a8_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a8_ns))
+a9_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a9_ns))
+a10_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a10_ns))
+a11_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a11_ns))
+a12_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a12_ns))
+a13_ns_metrics <- st_drop_geometry(get_metrics_by_segment(a13_ns))
+
+# Displaying this in a table: 
+
+
+
+# Join metrics to points
+a1_ds <- inner_join(a1_ds, a1_ds_metrics, by = join_by(segment == segment))
+a2_ds <- inner_join(a2_ds, a2_ds_metrics, by = join_by(segment == segment))
+a3_ds <- inner_join(a3_ds, a3_ds_metrics, by = join_by(segment == segment))
+a4_ds <- inner_join(a4_ds, a4_ds_metrics, by = join_by(segment == segment))
+a5_ds <- inner_join(a5_ds, a5_ds_metrics, by = join_by(segment == segment))
+a6_ds <- inner_join(a6_ds, a6_ds_metrics, by = join_by(segment == segment))
+a7_ds <- inner_join(a7_ds, a7_ds_metrics, by = join_by(segment == segment))
+a8_ds <- inner_join(a8_ds, a8_ds_metrics, by = join_by(segment == segment))
+a9_ds <- inner_join(a9_ds, a9_ds_metrics, by = join_by(segment == segment))
+a10_ds <- inner_join(a10_ds, a10_ds_metrics, by = join_by(segment == segment))
+a11_ds <- inner_join(a11_ds, a11_ds_metrics, by = join_by(segment == segment))
+a12_ds <- inner_join(a12_ds, a12_ds_metrics, by = join_by(segment == segment))
+a13_ds <- inner_join(a13_ds, a13_ds_metrics, by = join_by(segment == segment))
+
+a1_ns <- inner_join(a1_ns, a1_ns_metrics, by = join_by(segment == segment))
+a2_ns <- inner_join(a2_ns, a2_ns_metrics, by = join_by(segment == segment))
+a3_ns <- inner_join(a3_ns, a3_ns_metrics, by = join_by(segment == segment))
+a4_ns <- inner_join(a4_ns, a4_ns_metrics, by = join_by(segment == segment))
+a5_ns <- inner_join(a5_ns, a5_ns_metrics, by = join_by(segment == segment))
+a6_ns <- inner_join(a6_ns, a6_ns_metrics, by = join_by(segment == segment))
+a7_ns <- inner_join(a7_ns, a7_ns_metrics, by = join_by(segment == segment))
+a8_ns <- inner_join(a8_ns, a8_ns_metrics, by = join_by(segment == segment))
+a9_ns <- inner_join(a9_ns, a9_ns_metrics, by = join_by(segment == segment))
+a10_ns <- inner_join(a10_ns, a10_ns_metrics, by = join_by(segment == segment))
+a11_ns <- inner_join(a11_ns, a11_ns_metrics, by = join_by(segment == segment))
+a12_ns <- inner_join(a12_ns, a12_ns_metrics, by = join_by(segment == segment))
+a13_ns <- inner_join(a13_ns, a13_ns_metrics, by = join_by(segment == segment))
+
+
+
 ######## Map Matching ########
 # I did start to map match, but since this mixes up the order of the points 
 # (The fixes are sometimes to far off, and get therefore matched to the wrong 
