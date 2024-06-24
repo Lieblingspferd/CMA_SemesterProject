@@ -17,6 +17,8 @@ bibliography: bibliography.bib
 
 ``` 
 
+## Remark
+I am currently still working on this project. I still have to visualise and interpret the results and add the animated movement figure. Since it is already way after the deadline, I of course understand if that does not influence the grading, but I've now put so much effort and time into the project, that I don't want to leave it unfinished. I hope to finish today and would very much appreciate if the work I do until then would still influence the grading, but I am mainly finishing it for myself. (24.06.2024, 10:45)
 
 ## Abstract
 
@@ -30,7 +32,7 @@ The app that I use most of the time to track my activities is Strava. Strava has
 
 The research question for this project is therefore: Do the characteristics - speed, acceleration and jerk - differ between my different activity records? 
 
-Mountainbiking GPS activity data has been used in multiple studies to monitor and manage trail systems (Mendes et al., 2023; Wolf et al., 2015). But there are few papers that analyse the performance of mountainbikers using GPS data. Hurst et al. (2013) have studied the influence of different course types on the activity profiles based on GPS data. Apart from that I could not find anything related to mountainbiking and using GPS-data to assess the performance of riders. 
+Mountainbiking GPS activity data has been used in multiple studies to monitor and manage trail systems ([@nogueira_mendes_squeezing_2023]; [@wolf_use_2015]). But there are few papers that analyse the performance of mountainbikers using GPS data. Hurst et al. ([@hurst_gps-based_2013]) have studied the influence of different course types on the activity profiles based on GPS data. Apart from that I could not find anything related to mountainbiking and using GPS-data to assess the performance of riders. 
 
 ## Material and Methods
 
@@ -71,7 +73,7 @@ The following pictures (Figure 1) highlight some parts of the trail:
 
 ![Corner that I cannot ride](photos/IMG_20240617_163115.jpg){#fig-notridecorner}
 
-Photos of the Trail
+Photos of the Trail, taken on: 17.06.2024
 :::
 
 To crop the records to the correct extent ("Bleiki DH"), I used a manually drawn line of the part of the hiking path on the Swisstopo Web Map. To attempt the Map Matching, I started with using the "DKM10_STRASSE" layer from the vectorized 1:10 000 map from Swisstopo (https://www.swisstopo.admin.ch/de/landeskarte-swiss-map-vector-10). Since this path does not match the real course of the hiking path, I later used the path from the Open Street Map (https://www.openstreetmap.org/#map=16/46.6937/7.8627), which does match the Digital Elevation Model better. 
@@ -80,7 +82,7 @@ To crop the records to the correct extent ("Bleiki DH"), I used a manually drawn
 
 The activity records are full mountainbike rides, so they include not only the data of the trail, but also the ascent or potential additional trails. These parts had to be eliminated and it had to be made sure that only the relevant parts of the activity, the segment "Bleiki DH", remained. To do that, I drew by hand a line on the Webmap of Swisstopo (https://map.geo.admin.ch) of the trail and exported that. I then created a buffer of 20 meter around it and deleted all GPS fixes that were outside of this zone. Since the climb to the start of this segment does cross the segment regularly these points were also included. To achieve that the fixes were divided into segments according to the timestamp and only the longest segment was kept. 
 
-Then I continued with calculating the speed in three different ways. The first one is the simple calculation of the speed between two consecutive fixes by calculating the distance from the coordinates and dividing that through the time difference. The second and third ways are analog to the method used by Laube and Purves (2011) and similar to the way it was done in the course. This was done for 5 consecutive fixes and 11 consecutive fixes. Afterwards I filtered out static points, here speeds slower than 1 m/s.  
+Then I continued with calculating the speed in three different ways. The first one is the simple calculation of the speed between two consecutive fixes by calculating the distance from the coordinates and dividing that through the time difference. The second and third ways are analog to the method used by Laube and Purves ([@laube_how_2011]) and similar to the way it was done in the course. This was done for 5 consecutive fixes and 11 consecutive fixes. Afterwards I filtered out static points, here speeds slower than 1 m/s.  
 
 To analyse the smoothness, I calculated acceleration and jerk of the recordings. I then calculated the mean and the standard deviation for all three metrics. As well as the time in between the first and the last point. 
 
@@ -88,7 +90,7 @@ To analyse the smoothness, I calculated acceleration and jerk of the recordings.
 
 ## Results
 
-The table "summary metrics" shows the total time, the mean and the standard deviation of the speed, acceleration and jerk always calculated for two consecutive fixes and with the static points filtered out. The four times, which are around four minutes are not possible and some points must have been deleted during an additional cropping to filter out the points that are rests at the end of the segment. 
+The table "summary metrics" shows the total time, the mean and the standard deviation of the speed, acceleration and jerk always calculated for two consecutive fixes and with the static points filtered out. The four times around four minutes as well as a2 are not possible and some points must have been deleted during an additional cropping to filter out the points that are rests at the end of the segment. 
 
 |name       |total_time|mean_speed|sd_speed|mean_acceleration|sd_acceleration|mean_jerk  |sd_jerk |
 |-----------|----------|----------|--------|-----------------|---------------|-----------|--------|

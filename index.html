@@ -55,7 +55,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="index_files/libs/clipboard/clipboard.min.js"></script>
@@ -104,6 +124,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="remark" class="level2">
+<h2 class="anchored" data-anchor-id="remark">Remark</h2>
+<p>I am currently still working on this project. I still have to visualise and interpret the results and add the animated movement figure. Since it is already way after the deadline, I of course understand if that does not influence the grading, but I’ve now put so much effort and time into the project, that I don’t want to leave it unfinished. I hope to finish today and would very much appreciate if the work I do until then would still influence the grading, but I am mainly finishing it for myself. (24.06.2024, 10:45)</p>
+</section>
 <section id="abstract" class="level2">
 <h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
 <p>While Mountainbiking I often repeat the same trails. Since I hope my technique has improved over the years, I wonder if that is also represented in the characteristics of the rides. Have I gotten faster, smoother, need less rests? For comparability I only analyse data from one specific trail. I have calculated the speed, acceleration and jerk for the different recordings and shorter segments thereof. This data is then additionally visualised in an animated graphic of the different recordings.</p>
@@ -113,7 +137,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In the six years that I have now gone mountainbiking frequently in my spare time, I have tracked almost every ride with GPS. This has created a lot of data. Part of which I now want to analyse. Specifically the data from one of my favourite trails: “Bleiki DH” in the “Bleikiwald” on the mountain “Harder” in Interlaken, Switzerland. I hope that my riding has improved over the years. But how much or how exactly is that represented in the GPS data?</p>
 <p>The app that I use most of the time to track my activities is Strava. Strava has specific features that allow to measure the times in defined segments (either created by oneself or created by other users) these times can then be compared to other users and a ranking is generated. Therefore I know that my time on this trail, “Bleiki DH”, has improved during the years. I also know that I can now ride more sections of the trail, compared to the beginning, where I had to walk some sections. So I can assume that my overall speed has gotten faster, but how exactly is this displayed in the data? Am I riding faster, smoother or am I just needing less rests? This is what I aim to find out in this project.</p>
 <p>The research question for this project is therefore: Do the characteristics - speed, acceleration and jerk - differ between my different activity records?</p>
-<p>Mountainbiking GPS activity data has been used in multiple studies to monitor and manage trail systems (Mendes et al., 2023; Wolf et al., 2015). But there are few papers that analyse the performance of mountainbikers using GPS data. Hurst et al.&nbsp;(2013) have studied the influence of different course types on the activity profiles based on GPS data. Apart from that I could not find anything related to mountainbiking and using GPS-data to assess the performance of riders.</p>
+<p>Mountainbiking GPS activity data has been used in multiple studies to monitor and manage trail systems (<span class="citation" data-cites="nogueira_mendes_squeezing_2023">(<a href="#ref-nogueira_mendes_squeezing_2023" role="doc-biblioref">Nogueira Mendes, Farías-Torbidoni, and Da Silva 2023</a>)</span>; <span class="citation" data-cites="wolf_use_2015">(<a href="#ref-wolf_use_2015" role="doc-biblioref">Wolf et al. 2015</a>)</span>). But there are few papers that analyse the performance of mountainbikers using GPS data. Hurst et al.&nbsp;(<span class="citation" data-cites="hurst_gps-based_2013">(<a href="#ref-hurst_gps-based_2013" role="doc-biblioref">Hurst et al. 2013</a>)</span>) have studied the influence of different course types on the activity profiles based on GPS data. Apart from that I could not find anything related to mountainbiking and using GPS-data to assess the performance of riders.</p>
 </section>
 <section id="material-and-methods" class="level2">
 <h2 class="anchored" data-anchor-id="material-and-methods">Material and Methods</h2>
@@ -198,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-trailpictures-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Photos of the Trail
+Figure&nbsp;1: Photos of the Trail, taken on: 17.06.2024
 </figcaption>
 </figure>
 </div>
@@ -207,13 +231,13 @@ Figure&nbsp;1: Photos of the Trail
 <section id="methods" class="level3">
 <h3 class="anchored" data-anchor-id="methods">Methods</h3>
 <p>The activity records are full mountainbike rides, so they include not only the data of the trail, but also the ascent or potential additional trails. These parts had to be eliminated and it had to be made sure that only the relevant parts of the activity, the segment “Bleiki DH”, remained. To do that, I drew by hand a line on the Webmap of Swisstopo (https://map.geo.admin.ch) of the trail and exported that. I then created a buffer of 20 meter around it and deleted all GPS fixes that were outside of this zone. Since the climb to the start of this segment does cross the segment regularly these points were also included. To achieve that the fixes were divided into segments according to the timestamp and only the longest segment was kept.</p>
-<p>Then I continued with calculating the speed in three different ways. The first one is the simple calculation of the speed between two consecutive fixes by calculating the distance from the coordinates and dividing that through the time difference. The second and third ways are analog to the method used by Laube and Purves (2011) and similar to the way it was done in the course. This was done for 5 consecutive fixes and 11 consecutive fixes. Afterwards I filtered out static points, here speeds slower than 1 m/s.</p>
+<p>Then I continued with calculating the speed in three different ways. The first one is the simple calculation of the speed between two consecutive fixes by calculating the distance from the coordinates and dividing that through the time difference. The second and third ways are analog to the method used by Laube and Purves (<span class="citation" data-cites="laube_how_2011">(<a href="#ref-laube_how_2011" role="doc-biblioref">Laube and Purves 2011</a>)</span>) and similar to the way it was done in the course. This was done for 5 consecutive fixes and 11 consecutive fixes. Afterwards I filtered out static points, here speeds slower than 1 m/s.</p>
 <p>To analyse the smoothness, I calculated acceleration and jerk of the recordings. I then calculated the mean and the standard deviation for all three metrics. As well as the time in between the first and the last point.</p>
 </section>
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<p>The table “summary metrics” shows the total time, the mean and the standard deviation of the speed, acceleration and jerk always calculated for two consecutive fixes and with the static points filtered out. The four times, which are around four minutes are not possible and some points must have been deleted during an additional cropping to filter out the points that are rests at the end of the segment.</p>
+<p>The table “summary metrics” shows the total time, the mean and the standard deviation of the speed, acceleration and jerk always calculated for two consecutive fixes and with the static points filtered out. The four times around four minutes as well as a2 are not possible and some points must have been deleted during an additional cropping to filter out the points that are rests at the end of the segment.</p>
 <table class="table-striped table-hover table">
 <caption>Summary Metrics</caption>
 <colgroup>
@@ -391,10 +415,24 @@ Figure&nbsp;1: Photos of the Trail
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>wordcountaddin<span class="sc">::</span><span class="fu">text_stats</span>(<span class="st">"index.qmd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+
 </section>
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hurst_gps-based_2013" class="csl-entry" role="listitem">
+Hurst, Howard Thomas, Mikael Swarén, Kim Hébert-Losier, Fredrik Ericsson, Jonathan Sinclair, Stephen Atkins, and Hans-Christer Homlberg. 2013. <span>“<span>GPS</span>-<span>Based</span> <span>Evaluation</span> of <span>Activity</span> <span>Profiles</span> in <span>Elite</span> <span>Downhill</span> <span>Mountain</span> <span>Biking</span> and the <span>Influence</span> of <span>Course</span> <span>Type</span>.”</span> <em>Journal of Science and Cycling</em> 2 (1): 25–32. <a href="https://jsc-journal.com/index.php/JSC/article/view/31">https://jsc-journal.com/index.php/JSC/article/view/31</a>.
+</div>
+<div id="ref-laube_how_2011" class="csl-entry" role="listitem">
+Laube, Patrick, and Ross S Purves. 2011. <span>“How Fast Is a Cow? <span>Cross</span>-Scale Analysis of Movement Data.”</span> <em>Transactions in GIS</em> 15 (3): 401–18.
+</div>
+<div id="ref-nogueira_mendes_squeezing_2023" class="csl-entry" role="listitem">
+Nogueira Mendes, Ricardo M., Estela Inés Farías-Torbidoni, and Carlos Pereira Da Silva. 2023. <span>“Squeezing the Most from Volunteered Geographic Information to Monitor Mountain Biking in Peri-Urban Protected and Recreational Areas at a Metropolitan Scale.”</span> <em>Journal of Outdoor Recreation and Tourism</em> 42 (June): 100624. <a href="https://doi.org/10.1016/j.jort.2023.100624">https://doi.org/10.1016/j.jort.2023.100624</a>.
+</div>
+<div id="ref-wolf_use_2015" class="csl-entry" role="listitem">
+Wolf, Isabelle D., Teresa Wohlfart, Greg Brown, and Abraham Bartolomé Lasa. 2015. <span>“The Use of Public Participation <span>GIS</span> (<span>PPGIS</span>) for Park Visitor Management: <span>A</span> Case Study of Mountain Biking.”</span> <em>Tourism Management</em> 51 (December): 112–30. <a href="https://doi.org/10.1016/j.tourman.2015.05.003">https://doi.org/10.1016/j.tourman.2015.05.003</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

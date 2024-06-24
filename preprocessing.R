@@ -714,16 +714,26 @@ frames <- frames_spatial(move_obj_aligned,
                          map_type = "topographic", 
                          alpha = 0.5) 
 
+# I somehow need to make sure that all animations run at the same time. 
+# Since I could not find out, how that works with MoveVis specifically, 
+# I am setting all timestamps to an arbitrary date (01.01.2024, 12:00)
+# so that they all start then. 
+library(lubridate)
+
 # function to create the move
 create_move <- function(dataframe){
+  timezero <- ymd_hms("2024-01-01 12:00:00")
   temp <- dataframe
+  starttime <- temp$timestamp[1]
+  temp$timediff <- as.numeric(difftime(temp$timestamp, starttime), units = "secs")
+  temp$newtime <- timezero + temp$timediff
   temp <- st_transform(temp, crs = 4326)
   coords <- st_coordinates(temp)
   temp <- cbind(temp, coords) 
   move_obj <- move(x = temp$X.1, 
                    y = temp$Y.1, 
-                   time = temp$timestamp, 
-                   data = deparse(substitute(dataframe)),
+                   time = temp$newtime, 
+                   animal = deparse(substitute(dataframe)),
                    proj = CRS("+proj=longlat +ellps=WGS84"))
   move_obj_aligned <- align_move(move_obj, res = 1, unit = "secs")
   return(move_obj_aligned)
@@ -744,29 +754,268 @@ a11_move <- create_move(a11_static2)
 a12_move <- create_move(a12_static2)
 a13_move <- create_move(a13_static2)
 
+# Manually adjust times, so that all moves that start lower only start, when 
+# a1 passes them
+
+# a2 + 197
+a2_move@timestamps <- a2_move@timestamps + 197
+# a7 + 29
+a7_move@timestamps <- a7_move@timestamps + 29
+# a13 + 305
+a13_move@timestamps <- a13_move@timestamps + 305
+# a10 + 269
+a10_move@timestamps <- a10_move@timestamps + 269
+# a4 + 396
+a4_move@timestamps <- a4_move@timestamps + 396
+# a12 + 408
+a12_move@timestamps <- a12_move@timestamps + 408
+
 # Combining them all together
 stack <- moveStack(a1_move, a2_move, a3_move, a4_move, a5_move, a6_move, a7_move, 
-            a8_move, a9_move, a10_move, a11_move, a12_move, a13_move, 
+            a8_move, a9_move, a10_move, a11_move, a12_move, a13_move 
             #names("a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13")
             )
-mt_set_track_id(stack, c("a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13"))
+
 plot(stack)
 
-names(stack) <- c("a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13")
-names(stack)
 # Align temporally
 stack_aligned <- align_move(stack, res = 1, unit = "secs")
 
 frames_stack <- frames_spatial(stack_aligned, 
                          map_service = "osm",  
                          map_type = "topographic", 
-                         alpha = 0.5) 
+                         alpha = 0.5)
+
+# Edit frames
+frames_stack <- add_labels(frames_stack, x = "Longitude", y = "Latitude")
+frames_stack <- add_progress(frames_stack) 
+frames_stack <- add_scalebar(frames_stack, height = 0.015) 
+frames_stack <- add_northarrow(frames_stack)
+
+frames_stack[[3]]
+# Unfortunately some of the moves start lower... and are therefore not comparable.
+
 # Animate the frames
-animation <- animate_frames(frames_stack, out_file = "gps_movement2.gif", 
+animation <- animate_frames(frames_stack, out_file = "gps_movement3.gif", 
                             width = 800, height = 600, fps = 24)  # Frames per second
 
 # Display the animation in R
 animation
+
+######## Visualize the results ######## 
+# Individual plots of speed, acceleration and jerk for each dataframe
+
+# Load required libraries
+library(ggplot2)
+
+# Function to get the maxspeed from all dataframes. 
+maxspeed <- function(){
+  maxval <- max(a1_static2$speed2, na.rm = TRUE)
+  if (max(a2_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a2_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a3_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a3_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a4_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a4_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a5_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a5_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a6_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a6_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a7_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a7_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a8_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a8_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a9_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a9_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a10_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a10_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a11_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a11_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a12_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a12_static2$speed2, na.rm = TRUE)
+  }
+  if (max(a13_static2$speed2, na.rm = TRUE) >= maxval){
+    maxval <- max(a13_static2$speed2, na.rm = TRUE)
+  }
+  return(maxval)
+}
+
+maxspeed2 <- maxspeed()
+# This function works great, but doing this for the minimum and maximum of 
+# speed, acceleration and jerk is taking to long. 
+# There must be more efficient ways (or more like, it can probably be done in less lines of code)
+
+# Global max and min of speed
+speed_lim <- function(){
+  speed2 <- c(a1_static2$speed2, a6_static2$speed2, a10_static2$speed2,
+                   a2_static2$speed2, a7_static2$speed2, a11_static2$speed2,
+                   a3_static2$speed2, a8_static2$speed2, a12_static2$speed2, 
+                   a4_static2$speed2, a9_static2$speed2, a13_static2$speed2, 
+                   a5_static2$speed2)
+  maxspeed <- max(speed2, na.rm = TRUE)
+  minspeed <- min(speed2, na.rm = TRUE)
+  return(c(maxspeed, minspeed))
+}
+
+speed_lim2 <- speed_lim()
+# Less lines of code... But I have not thought about the computational efficiency
+
+# Global Max and min of acceleration
+acceleration_lim <- function(){
+  acceleration2 <- c(a1_static2$acceleration2, a6_static2$acceleration2, a10_static2$acceleration2,
+              a2_static2$acceleration2, a7_static2$acceleration2, a11_static2$acceleration2,
+              a3_static2$acceleration2, a8_static2$acceleration2, a12_static2$acceleration2, 
+              a4_static2$acceleration2, a9_static2$acceleration2, a13_static2$acceleration2, 
+              a5_static2$acceleration2)
+  maxacc <- max(acceleration2, na.rm = TRUE)
+  minacc <- min(acceleration2, na.rm = TRUE)
+  return(c(maxacc, minacc)) 
+}
+
+acc_lim <- acceleration_lim()
+
+# Global Max and min of jerk
+jerk_lim <- function(){
+  jerk2 <- c(a1_static2$jerk2, a6_static2$jerk2, a10_static2$jerk2,
+                     a2_static2$jerk2, a7_static2$jerk2, a11_static2$jerk2,
+                     a3_static2$jerk2, a8_static2$jerk2, a12_static2$jerk, 
+                     a4_static2$jerk2, a9_static2$jerk2, a13_static2$jerk2, 
+                     a5_static2$jerk2)
+  maxjerk <- max(jerk2, na.rm = TRUE)
+  minjerk <- min(jerk2, na.rm = TRUE)
+  return(c(maxjerk, minjerk)) 
+}
+
+jerk_lim2 <- jerk_lim()
+
+plot_speed <- function(dataframe){
+  p_speed <- ggplot(dataframe, aes(x = timestamp, y = speed2)) +
+    geom_line() + 
+    ylim(speed_lim2[2], speed_lim2[1]) +
+    labs(title = paste(deparse(substitute(dataframe))), x = "Time", y = "Speed")
+  return(p_speed)
+}
+
+plot_speed_all <- function(){
+  p_speed <- ggplot() +
+    geom_line(aes(x = timediff_since_start(a1_static2), y = a1_static2$speed2), color = "red", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a2_static2), y = a2_static2$speed2), color = "orange", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a3_static2), y = a3_static2$speed2), color = "yellow", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a4_static2), y = a4_static2$speed2), color = "lightgreen", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a5_static2), y = a5_static2$speed2), color = "green", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a6_static2), y = a6_static2$speed2), color = "darkgreen", lty = "dashed") + 
+    geom_line(aes(x = timediff_since_start(a7_static2), y = a7_static2$speed2), color = "lightblue", lty = "dotted") + 
+    geom_line(aes(x = timediff_since_start(a8_static2), y = a8_static2$speed2), color = "royalblue", lty = "dotted") + 
+    geom_line(aes(x = timediff_since_start(a9_static2), y = a9_static2$speed2), color = "darkblue", lty = "dotted") + 
+    geom_line(aes(x = timediff_since_start(a10_static2), y = a10_static2$speed2), color = "purple", lty = "dotted") + 
+    geom_line(aes(x = timediff_since_start(a11_static2), y = a11_static2$speed2), color = "magenta", lty = "dotted") +
+    geom_line(aes(x = timediff_since_start(a12_static2), y = a12_static2$speed2), color = "pink", lty = "dotted") + 
+    geom_line(aes(x = timediff_since_start(a13_static2), y = a13_static2$speed2), color = "salmon", lty = "dotted") + 
+    ylim(speed_lim2[2], 25) +
+    labs(title = "Speed over the duration of the ride", x = "Time", y = "Speed")
+  return(p_speed)
+}
+# There is only one speed over 50 m/s, considering that this is more than 
+# 150 km/h, this is most likely due to an error in the GPS position, so to see 
+# the lines better, I am setting the ylim to 25 instead. 
+
+plot_speed_all()
+# Nice try, but this plot actually displays nothing
+
+# I am going all out and make the plot interactive
+
+test <- plot_speed(a1_static2)
+test
+# Plot Speed
+p_speed <- ggplot(combined_a, aes(x = timestamp, y = speed2, color = id)) +
+  geom_line() +
+  facet_wrap(~ id, ncol = 5) +
+  ylim(y_limits$speed_min, y_limits$speed_max) +
+  theme_minimal() +
+  labs(title = "Speed over Time", x = "Time", y = "Speed")
+
+# Plot Acceleration
+p_accel <- ggplot(combined_a, aes(x = timestamp, y = acceleration2, color = id)) +
+  geom_line() +
+  facet_wrap(~ id, ncol = 5) +
+  ylim(y_limits$accel_min, y_limits$accel_max) +
+  theme_minimal() +
+  labs(title = "Acceleration over Time", x = "Time", y = "Acceleration")
+
+# Plot Jerk
+p_jerk <- ggplot(combined_a, aes(x = timestamp, y = jerk2, color = id)) +
+  geom_line() +
+  facet_wrap(~ id, ncol = 5) +
+  ylim(y_limits$jerk_min, y_limits$jerk_max) +
+  theme_minimal() +
+  labs(title = "Jerk over Time", x = "Time", y = "Jerk")
+
+# Combine plots vertically
+combined_plot <- plot_grid(p_speed, p_accel, p_jerk, align = 'v', ncol = 1)
+
+combined_plot
+
+
+######## Segmentation ########
+# import segments
+# difficulty segmentation
+segment1 <- st_read("data/segmentation/difficulty_segmentation/segment1.gpkg")
+segment2 <- st_read("data/segmentation/difficulty_segmentation/segment2.gpkg")
+segment3 <- st_read("data/segmentation/difficulty_segmentation/segment3.gpkg")
+segment4 <- st_read("data/segmentation/difficulty_segmentation/segment4.gpkg")
+segment5 <- st_read("data/segmentation/difficulty_segmentation/segment5.gpkg")
+segment6 <- st_read("data/segmentation/difficulty_segmentation/segment6.gpkg")
+segment7 <- st_read("data/segmentation/difficulty_segmentation/segment7.gpkg")
+segment8 <- st_read("data/segmentation/difficulty_segmentation/segment8.gpkg")
+segment9 <- st_read("data/segmentation/difficulty_segmentation/segment9.gpkg")
+segment10 <- st_read("data/segmentation/difficulty_segmentation/segment10.gpkg")
+
+# natural segmentation
+n_segment1 <- st_read("data/segmentation/natural_segmentation/n_segment1.gpkg")
+n_segment2 <- st_read("data/segmentation/natural_segmentation/n_segment2.gpkg")
+n_segment3 <- st_read("data/segmentation/natural_segmentation/n_segment3.gpkg")
+n_segment4 <- st_read("data/segmentation/natural_segmentation/n_segment4.gpkg")
+n_segment5 <- st_read("data/segmentation/natural_segmentation/n_segment5.gpkg")
+n_segment6 <- st_read("data/segmentation/natural_segmentation/n_segment6.gpkg")
+n_segment7 <- st_read("data/segmentation/natural_segmentation/n_segment7.gpkg")
+n_segment8 <- st_read("data/segmentation/natural_segmentation/n_segment8.gpkg")
+
+
+# Create buffer for all segments
+buf1 <- st_buffer(segment1, 3, endCapStyle = "flat")
+buf2 <- st_buffer(segment2, 3, endCapStyle = "flat")
+buf3 <- st_buffer(segment3, 3, endCapStyle = "flat")
+buf4 <- st_buffer(segment4, 3, endCapStyle = "flat")
+buf5 <- st_buffer(segment5, 3, endCapStyle = "flat")
+buf6 <- st_buffer(segment6, 3, endCapStyle = "flat")
+buf7 <- st_buffer(segment7, 3, endCapStyle = "flat")
+buf8 <- st_buffer(segment8, 3, endCapStyle = "flat")
+buf9 <- st_buffer(segment9, 3, endCapStyle = "flat")
+buf10 <- st_buffer(segment10, 3, endCapStyle = "flat")
+
+n_buf1 <- st_buffer(n_segment1, 3, endCapStyle = "flat")
+n_buf2 <- st_buffer(n_segment2, 3, endCapStyle = "flat")
+n_buf3 <- st_buffer(n_segment3, 3, endCapStyle = "flat")
+n_buf4 <- st_buffer(n_segment4, 3, endCapStyle = "flat")
+n_buf5 <- st_buffer(n_segment5, 3, endCapStyle = "flat")
+n_buf6 <- st_buffer(n_segment6, 3, endCapStyle = "flat")
+n_buf7 <- st_buffer(n_segment7, 3, endCapStyle = "flat")
+n_buf8 <- st_buffer(n_segment8, 3, endCapStyle = "flat")
+
+# Adding a column, that states the column 
+# I will go from the top to the bottom, so
+a1 <- a1 %>% filter(apply(st_within(., buffer, sparse = FALSE), 1, any))
+
   
 ######## Map Matching ########
 # I did start to map match, but since this mixes up the order of the points 

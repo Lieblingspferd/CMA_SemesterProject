@@ -171,16 +171,57 @@ remove_timelag <- function(dataframe, threshold = 25){
 
 # function to create the move
 create_move <- function(dataframe){
+  timezero <- ymd_hms("2024-01-01 12:00:00")
   temp <- dataframe
+  starttime <- temp$timestamp[1]
+  temp$timediff <- as.numeric(difftime(temp$timestamp, starttime), units = "secs")
+  temp$newtime <- timezero + temp$timediff
   temp <- st_transform(temp, crs = 4326)
   coords <- st_coordinates(temp)
   temp <- cbind(temp, coords) 
   move_obj <- move(x = temp$X.1, 
                    y = temp$Y.1, 
-                   time = temp$timestamp, 
+                   time = temp$newtime, 
+                   animal = deparse(substitute(dataframe)),
                    proj = CRS("+proj=longlat +ellps=WGS84"))
   move_obj_aligned <- align_move(move_obj, res = 1, unit = "secs")
   return(move_obj_aligned)
+}
+
+# Global max and min of speed
+speed_lim <- function(){
+  speed2 <- c(a1_static2$speed2, a6_static2$speed2, a10_static2$speed2,
+              a2_static2$speed2, a7_static2$speed2, a11_static2$speed2,
+              a3_static2$speed2, a8_static2$speed2, a12_static2$speed2, 
+              a4_static2$speed2, a9_static2$speed2, a13_static2$speed2, 
+              a5_static2$speed2)
+  maxspeed <- max(speed2, na.rm = TRUE)
+  minspeed <- min(speed2, na.rm = TRUE)
+  return(c(maxspeed, minspeed))
+}
+
+# Global Max and min of acceleration
+acceleration_lim <- function(){
+  acceleration2 <- c(a1_static2$acceleration2, a6_static2$acceleration2, a10_static2$acceleration2,
+                     a2_static2$acceleration2, a7_static2$acceleration2, a11_static2$acceleration2,
+                     a3_static2$acceleration2, a8_static2$acceleration2, a12_static2$acceleration2, 
+                     a4_static2$acceleration2, a9_static2$acceleration2, a13_static2$acceleration2, 
+                     a5_static2$acceleration2)
+  maxacc <- max(acceleration2, na.rm = TRUE)
+  minacc <- min(acceleration2, na.rm = TRUE)
+  return(c(maxacc, minacc)) 
+}
+
+# Global Max and min of jerk
+jerk_lim <- function(){
+  jerk2 <- c(a1_static2$jerk2, a6_static2$jerk2, a10_static2$jerk2,
+             a2_static2$jerk2, a7_static2$jerk2, a11_static2$jerk2,
+             a3_static2$jerk2, a8_static2$jerk2, a12_static2$jerk, 
+             a4_static2$jerk2, a9_static2$jerk2, a13_static2$jerk2, 
+             a5_static2$jerk2)
+  maxjerk <- max(jerk2, na.rm = TRUE)
+  minjerk <- min(jerk2, na.rm = TRUE)
+  return(c(maxjerk, minjerk)) 
 }
 
 # Map Matching (without incorporating the timestamp)
