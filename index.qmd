@@ -8,7 +8,7 @@ format:
 execute:
   warning: false
   message: false
-lang: en  # switch to "de" if you write your report in german
+lang: en  
 bibliography: bibliography.bib
 ---
 
@@ -20,17 +20,86 @@ bibliography: bibliography.bib
 
 ## Abstract
 
-Just testing and checking if it works. 
+While Mountainbiking I often repeat the same trails. Since I hope my technique has improved over the years, I wonder if that is also represented in the characteristics of the rides. Have I gotten faster, smoother, need less rests? For comparability I only analyse data from one specific trail. I have calculated the speed, acceleration and jerk for the different recordings and shorter segments thereof. This data is then additionally visualised in an animated graphic of the different recordings.  
 
 ## Introduction
 
+In the six years that I have now gone mountainbiking frequently in my spare time, I have tracked almost every ride with GPS. This has created a lot of data. Part of which I now want to analyse. Specifically the data from one of my favourite trails: "Bleiki DH" in the "Bleikiwald" on the mountain "Harder" in Interlaken, Switzerland. I hope that my riding has improved over the years. But how much or how exactly is that represented in the GPS data?
 
+The app that I use most of the time to track my activities is Strava. Strava has specific features that allow to measure the times in defined segments (either created by oneself or created by other users) these times can then be compared to other users and a ranking is generated. Therefore I know that my time on this trail, "Bleiki DH", has improved during the years. I also know that I can now ride more sections of the trail, compared to the beginning, where I had to walk some sections. So I can assume that my overall speed has gotten faster, but how exactly is this displayed in the data? Am I riding faster, smoother or am I just needing less rests? This is what I aim to find out in this project. 
+
+The research question for this project is therefore: Do the characteristics - speed, acceleration and jerk - differ between my different activity records? 
+
+Mountainbiking GPS activity data has been used in multiple studies to monitor and manage trail systems (Mendes et al., 2023; Wolf et al., 2015). But there are few papers that analyse the performance of mountainbikers using GPS data. Hurst et al. (2013) have studied the influence of different course types on the activity profiles based on GPS data. Apart from that I could not find anything related to mountainbiking and using GPS-data to assess the performance of riders. 
 
 ## Material and Methods
 
+### Material
+
+To answer my question I used Mountainbiking activity records. These activity records all have in common, that I ride the same specific segment: "Bleiki DH". This is an established Strava Segment on a hiking path through the "Bleikiwald" on the "Harder" in Interlaken. All activity records used in this analysis are recorded with Strava. There are thirteen in total: 
+
+1. a1: "kurz_auf_den_harder", 26.04.2023
+2. a2: "2_Anlauf_Bleiki_DH_Sturz_", 29.06.2020
+3. a3: "2x_Harder_", 23.07.2022
+4. a4: "Bleiki_", 21.08.2022
+5. a5: "Bleiki_aber_diesmal_trocken", 03.05.2021
+6. a6: "Bleiki_DH", 26.06.2020
+7. a7: "Bleiki_Liebe_", 11.10.2022
+8. a8: "Einmal_schnell_zum_einkaufen", 15.08.2021
+9. a9: "Erholunsfahrt", 02.08.2022
+10. a10: "Harder_", 04.05.2023
+11. a11: "Hike_a_Bike_auf_den_harder", 18.04.2023
+12. a12: "Rutschige_nasse_Bleiki", 01.05.2021
+13. a13: "Sturz_Platten_und_kein_GPS", 02.08.2021
+
+The titles shown in the list above are the original titel, that I gave the named the activity after finishing the ride. Judging from the titles, the trail has different conditions ("diesmal trocken", "Rutschige nasse"), I had falls ("Sturz") or problems with the GPS ("kein GPS"). The activities were tracked with different devices (old phone, new phone, watch) but I do not remember which activity was tracked with which device and this is therefore ignored. 
+
+To crop the records to the correct extent ("Bleiki DH"), I used a manually drawn line of the part of the hiking path on the Swisstopo Web Map. To attempt the Map Matching, I started with using the "DKM10_STRASSE" layer from the vectorized 1:10 000 map from Swisstopo (https://www.swisstopo.admin.ch/de/landeskarte-swiss-map-vector-10). Since this path does not match the real course of the hiking path, I later used the path from the Open Street Map (https://www.openstreetmap.org/#map=16/46.6937/7.8627), which does match the Digital Elevation Model better. 
+
+### Methods
+
+The activity records are full mountainbike rides, so they include not only the data of the trail, but also the ascent or potential additional trails. These parts had to be eliminated and it had to be made sure that only the relevant parts of the activity, the segment "Bleiki DH", remained. To do that, I drew by hand a line on the Webmap of Swisstopo (https://map.geo.admin.ch) of the trail and exported that. I then created a buffer of 20 meter around it and deleted all GPS fixes that were outside of this zone. Since the climb to the start of this segment does cross the segment regularly these points were also included. To achieve that the fixes were divided into segments according to the timestamp and only the longest segment was kept. 
+
+Then I continued with calculating the speed in three different ways. The first one is the simple calculation of the speed between two consecutive fixes by calculating the distance from the coordinates and dividing that through the time difference. The second and third ways are analog to the method used by Laube and Purves (2011) and similar to the way it was done in the course. This was done for 5 consecutive fixes and 11 consecutive fixes. Afterwards I filtered out static points, here speeds slower than 1 m/s.  
+
+To analyse the smoothness, I calculated acceleration and jerk of the recordings. I then calculated the mean and the standard deviation for all three metrics. As well as the time in between the first and the last point. 
+
+
+
 ## Results
 
+The table "summary metrics" shows the total time, the mean and the standard deviation of the speed, acceleration and jerk always calculated for two consecutive fixes and with the static points filtered out. The four times, which are around four minutes are not possible and some points must have been deleted during an additional cropping to filter out the points that are rests at the end of the segment. 
+
+|name       |total_time|mean_speed|sd_speed|mean_acceleration|sd_acceleration|mean_jerk  |sd_jerk |
+|-----------|----------|----------|--------|-----------------|---------------|-----------|--------|
+|a1         | 8.733333 |3.550957  |1.868654|-0.14128463      |1.4838684      |-0.24563120|2.014201|
+|a2         | 8.200000 |2.381524  |1.420432|-0.13212074      |1.1349399      |-0.17480290|1.532881|
+|a3         | 9.216667 |3.202388  |1.764958|-0.13992214      |1.4473926      |-0.20882592|2.054420|
+|a4         | 3.916667 |2.214098  |1.073469|-0.02486591      |0.9402657      |-0.01139307|1.355023|
+|a5         |12.200000 |2.809733  |3.427974|-0.29801549      |2.5890709      |-0.19355522|3.432843|
+|a6         | 9.050000 |2.585993  |2.430425|-0.11758939      |1.8874779      |-0.19564350|2.863061|
+|a7         | 8.816667 |3.324868  |1.687150|-0.10434437      |1.4729562      |-0.18114721|2.147620|
+|a8         | 9.400000 |3.670464  |2.052802|-0.19795605      |1.6906365      |-0.28175639|2.299059|
+|a9         | 9.083333 |3.368626  |1.579005|-0.12241071      |1.3404117      |-0.20462191|1.918729|
+|a10        | 4.166667 |3.947066  |1.961292|-0.17986730      |1.6270238      |-0.23457723|2.290749|
+|a11        | 9.166667 |3.443760  |1.811001|-0.16247303      |1.6066817      |-0.24477666|2.265705|
+|a12        | 3.150000 |2.397451  |1.675945|-0.17855052      |1.1438687      |-0.17781120|1.559298|
+|a13        | 4.016667 |2.745504  |2.304157|-0.22935451      |1.4734592      |-0.16390741|2.146192|
+
+: Summary Metrics {.striped .hover}
+
 ## Discussion
+
+Many parts of this project turned out to be more challenging, than expected. While the calculation of the metrics is not difficult in itself, the difficulty for me was to crop the data to the correct extents, spatially and temporally, and to deal with inaccuracies of the GPS positions. Animating the data was also challenging because of the computation times. These problems resulted in a serious delay. 
+
+
+The analysis in this project was carried out on the original GPS fixes of the activity recordings and not a map matched version of the GPS points, even though the trail that I rode was clear and it was always the same. Mapmatching would have ensured, that the ridden distances also stay the same. By using the original position these differ slightly. But the mapmatched positions could not be used, because of the inaccuracy of the GPS fixes of my records. Often, the GPS fixes were offset by a few meters. This is not of consequence in a large scale and the position was not far off. But especially in corners or tight switchbacks it was a serious issue. When mapmatching, the fixes would get matched to the wrong part of the turn. This lead to a mixup of the order of the fixes, and a calculation of speed would have resulted in fast speeds followed by negative speeds. This issue could have been solved by altering the mapmatching script, to incorporate the timestamp and making sure that the order must be kept. This would then in turn have meant, that possible backwards movements (like falling and having to go back to pickup the bike or checking out lines and then going back to approach them) would have been missed. Another minor problem that I encountered in my attempt of mapmatching the GPS fixes was that the trail on the Swisstopo map did not match the real location of the trail. That was easily remedied by using the trail from Open Street Map data. When displaying the Swisstopo Trail on the Digital Elevation Model (DEM) it was apparent that the Trail, as drawn on Swisstopo does not match the real location of the trail. Whereas the trail from the Open Street map does match the DEM. The use of mapmatched fixes for the analysis would have been more important, if I tried to correlate the results of the analysis to, for example, a DEM, because the few meters that the GPS fixes are of would have mattered more. 
+
+
+I stored the recordings for each activity in individual dataframes. Therefore I have to execute all steps of the processing for every dataframe. This leads to a lots of repeated lines of code with only changing the name of the dataframe. Unfortunately I could not find out how to do this more efficiently, while keeping the data structured as it is. This consequently also meant, that I wrote functions for almost every calculation, that could not be carried out in a single line of code. If I would revise the script, I could adapt it to contain less functions, but functions that do more. Since the functions were developed as I went along and then directly applied to all dataframes, the code is the way it is.  
+
+
+Additionally to the 13 Strava records that were used to do the analysis, I also have three recordings with Komoot that were recorded prior to the Strava records. At this time, I used both apps for different purposes: I tried to ride fast in the Strava segments that mattered to me (usually descents and not ascents) when recording with Strava and did not care about the speed in specific segments when recording with Komoot (only the average speed of the whole activity mattered to me). Back then I mostly used Komoot as my default tracking app, whereas I now use Strava as my default. Using Strava had a  specific purpose and now using Komoot has the opposite specific purpose for me. The Komoot records were not analysed here due to time constraints, and I focused on the Strava records since I had more of them. Therefore a possible topic of Research to continue this analysis would be, if there is a significant difference in the characteristics of the activity when tracking with different apps. Are different activity tracking apps used for different purposes?
 
 ## Appendix
 
@@ -41,6 +110,7 @@ Just testing and checking if it works.
 ```{r}
 #| eval: false
 wordcountaddin::word_count("index.qmd")
+wordcountaddin::text_stats("index.qmd")
 ```
 
 
